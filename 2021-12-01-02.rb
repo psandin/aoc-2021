@@ -1,9 +1,13 @@
 require 'pp'
+require 'optparse'
 
-if ARGV.length == 0
-  puts "one file name pls, kthnx"
-  exit
-end
+params = {}
+OptionParser.new do |opts|
+  opts.on('-f PATH', '--file PATH', String, :REQUIRED)
+  opts.on('-s NUM', '--size NUM', Integer, :REQUIRED)
+end.parse!(into: params)
+raise OptionParser::MissingArgument, "--file" if params[:file].nil?
+raise OptionParser::MissingArgument, "--size" if params[:size].nil?
 
 def slurp_array (path)
   input_fh = open path
@@ -37,8 +41,8 @@ def count_increases (data)
   return increases
 end
 
-ss = 3
-input_path = ARGV[0]
+ss = params[:size]
+input_path = params[:file]
 inputs = slurp_array(input_path)
 blocks = bucket_inputs(inputs, ss)
 result = count_increases(blocks)
