@@ -18,9 +18,9 @@ def slurp_array (path)
 end
 
 def bucket_inputs (data, slice_size)
-  if slice_size > data.length
-    puts 'Well this is bad, gtfo'
-    exit
+  if slice_size >= data.length
+    puts 'Slice size exceeds file size 💀'
+    exit -1
   end
 
   slice_count = data.length - slice_size
