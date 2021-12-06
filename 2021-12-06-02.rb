@@ -28,12 +28,10 @@ puts "Days between births set to #{$days_between_births}" if $args[:verbose]
 puts "Additional cycle zero delay set to #{$zero_cycle_delay}" if $args[:verbose]
 puts "Tick count set to #{$tick_count}" if $args[:verbose]
 
-$feeeesh_school = {}
+$feeeesh_school = []
 
 def load_feeeesh
-  0.upto($zero_cycle_delay + $days_between_births).each { |i|
-    $feeeesh_school[i] = 0
-  }
+  $feeeesh_school = 0.upto($zero_cycle_delay + $days_between_births).map { 0 }
   base_pop = slurp($args[:file])
   base_pop.each { |f|
    $feeeesh_school[f.to_i] += 1
@@ -41,16 +39,13 @@ def load_feeeesh
 end
 
 def dump_school
-  puts $feeeesh_school if $args[:verbose]
+  puts "#{$feeeesh_school}" if $args[:verbose]
 end
 
 def global_tick
-  birthing = $feeeesh_school[0]
-  1.upto($zero_cycle_delay + $days_between_births) { |i|
-    $feeeesh_school[i-1] = $feeeesh_school[i]
-  }
+  birthing = $feeeesh_school.shift
   $feeeesh_school[$days_between_births] += birthing
-  $feeeesh_school[$days_between_births + $zero_cycle_delay] = birthing
+  $feeeesh_school.push(birthing)
 end
 
 load_feeeesh
@@ -61,5 +56,5 @@ dump_school
   dump_school
 }
 
-total_feeesh = $feeeesh_school.each_value.sum
+total_feeesh = $feeeesh_school.each.sum
 puts "#{total_feeesh} total feeeesh"
