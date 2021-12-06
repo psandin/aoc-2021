@@ -47,25 +47,16 @@ def mark_line(line)
     end
     return true
   end
-  smaller, larger = [line[0][:x], line[1][:x]].minmax
-  miny, maxy = [line[0][:y], line[1][:y]].minmax
-  #this is bad, I feel bad 😢
+
+  y_delta = 1
   if line[0][:x] < line[1][:x]
-    if line[0][:y] < line[1][:y]
-      y_delta = 1
-      y = miny
-    else
-      y_delta = -1
-      y = maxy
-    end
+    smaller, larger = [line[0][:x], line[1][:x]]
+    y_delta = -1 if line[0][:y] > line[1][:y]
+    y = line[0][:y]
   else
-    if line[0][:y] < line[1][:y]
-      y_delta = -1
-      y = maxy
-    else
-      y_delta = 1
-      y = miny
-    end
+    smaller, larger = [line[1][:x], line[0][:x]]
+    y_delta = -1 if line[1][:y] > line[0][:y]
+    y = line[1][:y]
   end
   puts "Diagonal line #{line}" if $args[:verbose]
 
