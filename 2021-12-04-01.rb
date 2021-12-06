@@ -20,6 +20,7 @@ end
 
 $boards = []
 $last_call = 0
+winner_found = false
 
 def load_data
     lines = slurp($args[:file])
@@ -32,13 +33,13 @@ end
 def load_board(data)
   blank = data.shift
   board = []
-  puts "starting new board"
+  puts "starting new board" if $args[:verbose]
   0.upto(4).each {
     board.push(*data.shift.split.map { |e| { value: e, called:false } })
   }
   $boards.push(board)
-  display_board(board)
-  puts
+  display_board(board) if $args[:verbose]
+  puts if $args[:verbose]
 end
 
 def display_board(board)
@@ -56,6 +57,7 @@ def display_board(board)
 end
 
 def call_number(num)
+  puts "Calling #{num}" if $args[:verbose]
   $last_call = num
   $boards.each do |b|
     b.each do |c|
@@ -87,28 +89,13 @@ def calc_board(board)
 end
 
 load_data
-call_number($draws.shift)
-call_number($draws.shift)
-call_number($draws.shift)
-call_number($draws.shift)
-call_number($draws.shift)
-puts
-puts
-display_board($boards[2])
-puts check_board($boards[2])
-
-call_number($draws.shift)
-call_number($draws.shift)
-call_number($draws.shift)
-call_number($draws.shift)
-call_number($draws.shift)
-call_number($draws.shift)
-puts
-display_board($boards[2])
-puts check_board($boards[2])
-
-call_number($draws.shift)
-puts
-display_board($boards[2])
-puts check_board($boards[2])
-puts calc_board($boards[2])
+while not winner_found
+  call_number($draws.shift)
+  $boards.each do |b|
+    if check_board(b)
+      display_board(b)
+      puts calc_board(b)
+      winner_found = true
+    end
+  end
+end
