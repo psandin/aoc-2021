@@ -1,7 +1,11 @@
 require 'pp'
 require 'optparse'
 
-$args = {}
+$args = {
+  birthage: 6,
+  delay: 2,
+  ticks: 80
+}
 OptionParser.new do |opts|
   opts.on('-f PATH', '--file PATH', String, :REQUIRED)
   opts.on('-t TICKS', '--ticks TICKS', Integer)
@@ -20,11 +24,13 @@ def slurp (path)
 end
 
 $fish_counter = 0
-$days_between_births = $args.key?(:birthage) ? $args[:birthage].to_i : 6
-$zero_cycle_delay = $args.key?(:delay) ? $args[:delay].to_i : 2
+$days_between_births = $args[:birthage].to_i
+$zero_cycle_delay = $args[:delay].to_i
+$tick_count = $args[:ticks].to_i
 
 puts "Days between births set to #{$days_between_births}" if $args[:verbose]
 puts "Additional cycle zero delay set to #{$zero_cycle_delay}" if $args[:verbose]
+puts "Tick count set to #{$tick_count}" if $args[:verbose]
 
 class Feeeesh
   def initialize (age:$days_between_births + $zero_cycle_delay + 1, school:[])
@@ -55,9 +61,6 @@ class Feeeesh
     end
   end
 end
-
-$tick_count = $args.key?(:ticks)  ? $args[:ticks].to_i : 80
-puts "Tick count set to #{$tick_count}" if $args[:verbose]
 
 $feeeesh_school = []
 def load_feeeesh
