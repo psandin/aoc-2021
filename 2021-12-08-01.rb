@@ -1,11 +1,7 @@
 require 'pp'
 require 'optparse'
 
-$args = {
-  ticks: 80,
-  delay: 2,
-  birthage: 6,
-}
+$args = {}
 OptionParser.new do |opts|
   opts.on('-f PATH', '--file PATH', String, :REQUIRED)
   opts.on('-v', '--verbose')
