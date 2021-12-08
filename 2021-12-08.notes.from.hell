@@ -58,6 +58,14 @@ x   -
 -   E
   x
 
-fecdb => 3 [Missing bottom left]
+fabcd => 2 [include bottom left]
 
-fabcd => 2 [The last one]
+  x
+-   x
+  x
+A   -
+  x
+
+fecdb => 3 [the last one]
+
+
