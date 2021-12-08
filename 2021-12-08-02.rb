@@ -18,8 +18,8 @@ end
 
 def parse_line(line)
   digits_raw, numbers_raw = line.split(/\| /)
-  numbers = numbers_raw.split(/ /)
-  digits = digits_raw.split(/ /)
+  numbers = numbers_raw.split(/ /).map {|c| c.chars.sort.join}
+  digits = digits_raw.split(/ /).map {|c| c.chars.sort.join}
   return [digits, numbers]
 end
 
@@ -82,17 +82,12 @@ def identify_symbols(symbols)
   # Three
   identified[3] = symbols[0]
 
-  # Canonicalize
-  identified.each_pair { |k, v| 
-    identified[k] = identified[k].chars.sort.join
-  }
-
   # Swap keys and values since that's the operation we really want
   identified.invert
 end
 
 def translate_number(symbols, values)
-  r = values.map { |v| symbols[v.chars.sort.join].to_s}.join.to_i
+  r = values.map { |v| symbols[v]}.join.to_i
 end
 
 raw_lines = slurp($args[:file])
