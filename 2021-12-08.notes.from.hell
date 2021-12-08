@@ -1,0 +1,63 @@
+be cfbegad cbdgef fgaecd cgeb fdcge agebfd fecdb fabcd edb
+
+cfbegad => 8 [no info, do first and move on]
+
+be => 1 [Start here to find the exclusion bits for the top bar]
+
+ -
+- B|E => [Right candidates]
+ -
+- B|E
+ -
+
+cgeb => 4 [extract mid bar candidates]
+
+   -
+C|G B|E
+  C|G  => [mid candidates]
+ -  B|E
+   -
+
+edb => 7 [Identify top bar]
+
+   D => [Top]
+ -   B|E
+   -
+ -   B|E
+   -
+
+fgaecd => 6 [Identify left positions, only one of the two right side bar character (bottom one, needed for 5), identify bottom left digits]
+   D
+C|G  -
+  C|G
+F|A   E => [Bottom right]
+  F|A => [left bottom candidates]
+
+cbdgef => 9 [ Identify right positions, only one of the two left bottom corner charactes]
+
+   D
+C|G  B => [Top right]
+  C|G
+-    E
+   F => [Bottom]
+
+agebfd => 0 [The third 6 segment is the 0]
+
+   D
+ G    B
+   -
+A*    E
+   F
+* => [Bottom Left]
+
+fdcge => 5 [Bottom right, not top right]
+
+  x
+x   -
+  x
+-   E
+  x
+
+fecdb => 3 [Missing bottom left]
+
+fabcd => 2 [The last one]
