@@ -19,7 +19,7 @@ end
 def parse_line(line)
   digits_raw, numbers_raw = line.split(/\| /)
   numbers = numbers_raw.split(/ /).map {|c| c.chars.sort.join}
-  digits = digits_raw.split(/ /).map {|c| c.chars.sort.join}
+  digits = digits_raw.split(/ /).map {|c| c.chars.sort}
   return [digits, numbers]
 end
 
@@ -33,17 +33,17 @@ def identify_symbols(symbols)
   # One
   identified[1] = symbols.select {|s| s.length == 2}[0]
   symbols.delete(identified[1])
-  right_candidates = identified[1].split(//)
+  right_candidates = identified[1]
 
   # Four
   identified[4] = symbols.select {|s| s.length == 4}[0]
   symbols.delete(identified[4])
-  mid_candidates = identified[4].split(//) - right_candidates
+  mid_candidates = identified[4] - right_candidates
 
   # Seven
   identified[7] = symbols.select {|s| s.length == 3}[0]
   symbols.delete(identified[7])
-  top_symbol = (identified[7].split(//) - right_candidates)[0]
+  top_symbol = (identified[7] - right_candidates)[0]
 
   # Six
   six_candidates = symbols.select {|s| s.length == 6}
@@ -52,7 +52,7 @@ def identify_symbols(symbols)
     (s.include?(right_candidates[1]) and not s.include?(right_candidates[0]))
   }[0]
   symbols.delete(identified[6])
-  bottom_left_candidates = identified[6].split(//) - mid_candidates - right_candidates - [top_symbol]
+  bottom_left_candidates = identified[6] - mid_candidates - right_candidates - [top_symbol]
   bottom_right = identified[6].include?(right_candidates[0]) ? right_candidates[0] : right_candidates[1]
   top_right = (right_candidates - [bottom_right])[0]
 
@@ -83,7 +83,24 @@ def identify_symbols(symbols)
   identified[3] = symbols[0]
 
   # Swap keys and values since that's the operation we really want
-  identified.invert
+  identified.each_with_object({}) { |(k,v),o| o[v.join] = k}
+end
+
+def elegant_identify_symbols(symbols)
+  identified = {}
+
+  identified[8] = symbols.find {|s| s.length == 7}
+  identified[1] = symbols.find {|s| s.length == 2}
+  identified[4] = symbols.find {|s| s.length == 4}
+  identified[7] = symbols.find {|s| s.length == 3}
+  identified[3] = symbols.find {|s| s.length == 5 and (s - identified[7]).length == 2}
+  identified[6] = symbols.find {|s| s.length == 6 and (s - identified[7]).length == 4}
+  identified[2] = symbols.find {|s| s.length == 5 and (s - identified[4]).length == 3}
+  identified[5] = symbols.find {|s| s.length == 5 and (s - identified[6]).length == 0}
+  identified[0] = symbols.find {|s| s.length == 6 and (s - identified[5]).length == 2}
+  identified[9] = symbols.find {|s| s.length == 6 and (s - identified[3]).length == 1}
+
+  identified.each_with_object({}) { |(k,v),o| o[v.join] = k}
 end
 
 def translate_number(symbols, values)
@@ -93,7 +110,7 @@ end
 raw_lines = slurp($args[:file])
 values = raw_lines.map { |l| parse_line(l) }
 int_values = values.map do |l|
-  symbol_map = identify_symbols(l[0])
+  symbol_map = elegant_identify_symbols(l[0])
   puts "#{symbol_map}"
   translate_number(symbol_map, l[1])
 end
