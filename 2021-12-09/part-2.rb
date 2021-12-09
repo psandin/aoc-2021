@@ -60,4 +60,4 @@ end
 #let's go
 height_map = slurp($args[:file]).map { |l| l.split(//).map { |i| i.to_i }}
 puts find_low_points(height_map).map { |l| expand_basin(height_map, l) }
-  .map { |b| b.length  }.sort.reverse.slice(0,3).reduce(1, :*)
+  .map { |b| b.length  }.sort.slice(-3,3).reduce(1, :*)
