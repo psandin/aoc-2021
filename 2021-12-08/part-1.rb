@@ -1,12 +1,20 @@
 require 'pp'
 require 'optparse'
 
-$args = {}
+$args = {
+  file: File.dirname(__FILE__) + "/input"
+}
 OptionParser.new do |opts|
-  opts.on('-f PATH', '--file PATH', String, :REQUIRED)
-  opts.on('-v', '--verbose')
-end.parse!(into: $args)
-raise OptionParser::MissingArgument, "--file" if $args[:file].nil?
+  opts.on('-s', '--simple') do
+    $args[:file] = File.dirname(__FILE__) + "/input.simple"
+  end
+  opts.on('-f PATH', '--file PATH', String) do |path|
+    $args[:file] = path
+  end
+  opts.on('-v', '--verbose') do
+    $args[:verbose] = true
+  end
+end.parse!
 
 def slurp (path)
   input_fh = open path
