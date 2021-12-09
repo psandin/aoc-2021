@@ -29,13 +29,13 @@ def find_low_points (height_map)
   @max_y = height_map.length - 1
   @max_x = height_map[0].length - 1
   mins = []
-  height_map.each_with_index do |r,i|
-    r.each_with_index do |e, j|
-      mins.push([j, i]) if
-      (j == 0      or height_map[i][j-1] > e) and
-      (i == 0      or height_map[i-1][j] > e) and
-      (j == @max_x or height_map[i][j+1] > e) and
-      (i == @max_y or height_map[i+1][j] > e)
+  height_map.each_with_index do |r, y|
+    r.each_with_index do |e, x|
+      mins.push([x, y]) if
+      (x == 0      or height_map[y][x - 1] > e) and
+      (x == @max_x or height_map[y][x + 1] > e) and
+      (y == 0      or height_map[y - 1][x] > e) and
+      (y == @max_y or height_map[y + 1][x] > e)
     end
   end
   return mins
@@ -43,14 +43,14 @@ end
 
 def expand_basin(height_map, origin)
   basin_set = Set[origin]
-  basin_size = - 1
+  basin_size = -1
   while basin_size != basin_set.length
     basin_size = basin_set.length
     basin_set.each do |p|
       x, y = p
-      basin_set += [[x - 1, y]] if x > 0 and height_map[y][x - 1] < 9
+      basin_set += [[x - 1, y]] if x > 0      and height_map[y][x - 1] < 9
       basin_set += [[x + 1, y]] if x < @max_x and height_map[y][x + 1] < 9
-      basin_set += [[x, y - 1]] if y > 0 and height_map[y - 1][x] < 9
+      basin_set += [[x, y - 1]] if y > 0      and height_map[y - 1][x] < 9
       basin_set += [[x, y + 1]] if y < @max_y and height_map[y + 1][x] < 9
     end
   end
