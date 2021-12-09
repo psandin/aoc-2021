@@ -1,5 +1,6 @@
 require 'pp'
 require 'optparse'
+require 'set'
 
 $args = {
   file: File.dirname(__FILE__) + "/input"
@@ -62,27 +63,19 @@ def find_low_points (height_map)
 end
 
 def expand_basin(height_map, origin)
-  basin_elements = [origin]
+  basin_set = Set[origin]
   basin_size = - 1
-  while basin_size != basin_elements.length
-    basin_size = basin_elements.length
-    basin_elements.each do |p|
+  while basin_size != basin_set.length
+    basin_size = basin_set.length
+    basin_set.each do |p|
       x, y = p
-      if x > 0 and height_map[y][x - 1] < 9 and not basin_elements.include?([x - 1, y])
-        basin_elements.push([x - 1, y])
-      end
-      if x < @max_x and height_map[y][x + 1] < 9 and not basin_elements.include?([x + 1, y])
-        basin_elements.push([x + 1, y])
-      end
-      if y > 0 and height_map[y - 1][x] < 9 and not basin_elements.include?([x, y - 1])
-        basin_elements.push([x, y - 1])
-      end
-      if y < @max_y and height_map[y + 1][x] < 9 and not basin_elements.include?([x, y + 1])
-        basin_elements.push([x, y + 1])
-      end
+      basin_set += [[x - 1, y]] if x > 0 and height_map[y][x - 1] < 9
+      basin_set += [[x + 1, y]] if x < @max_x and height_map[y][x + 1] < 9
+      basin_set += [[x, y - 1]] if y > 0 and height_map[y - 1][x] < 9
+      basin_set += [[x, y + 1]] if y < @max_y and height_map[y + 1][x] < 9
     end
   end
-  return basin_elements
+  return basin_set.to_a
 end
 
 #let's go
