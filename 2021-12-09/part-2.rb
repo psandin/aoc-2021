@@ -31,32 +31,11 @@ def find_low_points (height_map)
   mins = []
   height_map.each_with_index do |r,i|
     r.each_with_index do |e, j|
-      taller = 0
-      if j == 0
-        taller += 1
-      elsif height_map[i][j-1] > e
-        taller += 1
-      end
-
-      if i == 0
-        taller += 1
-      elsif height_map[i-1][j] > e
-        taller += 1
-      end
-
-      if j == @max_x
-        taller += 1
-      elsif height_map[i][j+1] > e
-        taller += 1
-      end
-
-      if i == @max_y
-        taller += 1
-      elsif height_map[i+1][j] > e
-        taller += 1
-      end
-
-      mins.push([j, i]) if taller == 4
+      mins.push([j, i]) if
+      (j == 0      or height_map[i][j-1] > e) and
+      (i == 0      or height_map[i-1][j] > e) and
+      (j == @max_x or height_map[i][j+1] > e) and
+      (i == @max_y or height_map[i+1][j] > e)
     end
   end
   return mins
