@@ -61,6 +61,6 @@ def score_complete (charset)
   end
 end
 
-scores = slurp($args[:file]).map { |l| validate(l) }.map { |l| score_complete(l) }.select { |i| not i.nil? }.sort
+scores = slurp($args[:file]).map { |l| validate(l) }.select { |a| a.length > 0 }.map { |l| score_complete(l) }.sort
 puts scores[scores.length / 2]
 
