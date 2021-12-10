@@ -30,52 +30,39 @@ end
 @expected['['] = ']'
 @expected['<'] = '>'
 
-# puts "#{@expected}"
+@values = {}
+@values[')']=1
+@values[']']=2
+@values['}']=3
+@values['>']=4
 
 def validate(line)
   expected_closers = []
-  bad_char = nil
+  bad_line = false
   line.chars.each do |c|
-    # puts "Pondering #{c}"
     if @expected.has_key?(c)
       expected_closers.push(@expected[c])
-      # puts "Pushed: #{expected_closers}"
     elsif expected_closers.last == c
       expected_closers.pop
-      # puts "Poped: #{expected_closers}"
     else
-      # puts "Expected #{expected_closers.last} found #{c}"
-      bad_char = c
+      bad_line = true
       break
     end
   end
-  if bad_char.nil?
-    puts "#{score_complete(expected_closers)}"
-    score_complete(expected_closers)
+  if not bad_line
+    expected_closers.reverse
   else
-    0
+    []
   end
 end
 
 def score_complete (charset)
-  mul = charset.length + 1
-  mul = 5
-  charset = charset.reverse
-
-  values = {}
-  values[')']=1
-  values[']']=2
-  values['}']=3
-  values['>']=4
-
   charset.reduce do |o, i|
-    o = values[o] if o.is_a? String
-    (o * 5) + values[i]
+    o = @values[o] if o.is_a? String
+    (o * 5) + @values[i]
   end
 end
 
-raw_lines = slurp($args[:file])
-scores = raw_lines.map { |l| validate(l) }.select { |i| i!=0 }.sort
-puts "#{scores}"
+scores = slurp($args[:file]).map { |l| validate(l) }.map { |l| score_complete(l) }.select { |i| not i.nil? }.sort
 puts scores[scores.length / 2]
 
