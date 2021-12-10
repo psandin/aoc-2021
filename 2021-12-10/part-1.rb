@@ -24,25 +24,21 @@ def slurp (path)
   return input_str.split(/\n/)
 end
 
-@expected = {}
-@expected['('] = ')'
-@expected['{'] = '}'
-@expected['['] = ']'
-@expected['<'] = '>'
-
-puts "#{@expected}"
+@expected = {
+  '(' => ')',
+  '[' => ']',
+  '{' => '}',
+  '<' => '>',
+}
 
 def validate(line)
   expected_closers = []
   bad_char = nil
   line.chars.each do |c|
-    # puts "Pondering #{c}"
     if @expected.has_key?(c)
       expected_closers.push(@expected[c])
-      # puts "Pushed: #{expected_closers}"
     elsif expected_closers.last == c
       expected_closers.pop
-      # puts "Poped: #{expected_closers}"
     else
       puts "Expected #{expected_closers.last} found #{c}"
       bad_char = c
