@@ -24,17 +24,19 @@ def slurp (path)
   return input_str.split(/\n/)
 end
 
-@expected = {}
-@expected['('] = ')'
-@expected['{'] = '}'
-@expected['['] = ']'
-@expected['<'] = '>'
+@expected = {
+  '(' => ')',
+  '[' => ']',
+  '{' => '}',
+  '<' => '>',
+}
 
-@values = {}
-@values[')']=1
-@values[']']=2
-@values['}']=3
-@values['>']=4
+@values = {
+  ')' => 1,
+  ']' => 2,
+  '}' => 3,
+  '>' => 4,
+}
 
 def validate(line)
   expected_closers = []
@@ -49,11 +51,7 @@ def validate(line)
       break
     end
   end
-  if not bad_line
-    expected_closers.reverse
-  else
-    []
-  end
+  bad_line ? [] : expected_closers.reverse
 end
 
 def score_complete (charset)
