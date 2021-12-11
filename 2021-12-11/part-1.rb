@@ -29,11 +29,7 @@ end
 def draw_array(arr)
   s = Math.sqrt(arr.length)
   arr.each_with_index do |v, i|
-    if v == 0
-      print "0 ".bold
-    else
-      print "#{v} "
-    end
+    print v == 0 ? "0 ".bold : "#{v} "
     puts if i % s == s - 1
   end
 end
