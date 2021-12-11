@@ -41,7 +41,7 @@ def cycle(arr)
     arr[i] += 1
     flash_cell(i, arr, flashed) if arr[i] == 10
   end
-  flashed.map {|c| c ? 1 : 0}.sum
+  flashed.count(true)
 end
 
 def flash_cell(i, arr, flashed)
