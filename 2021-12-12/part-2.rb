@@ -38,24 +38,24 @@ end
 
 $gpaths = []
 
-def walk_paths(network, node: 'start', visited: {}, path: [], two_burned: false)
+def walk_paths(network, node: 'start', visited: {}, path: [])
   path.push(node)
   if node == 'end'
     $gpaths.push(path)
     return
   end
-  local_node = network[node]
-  prefix = path.join(',')
   if (node.match /[[:upper:]]/) ? false : true
     visited[node] ||= 0
     visited[node] += 1
-    two_burned = true if visited[node] > 1 and not two_burned
-    visited[node] += 1 if node == "start"
+    visited[node] = 3 if node == "start"
   end
 
-  local_node.each do |n|
-    next if not visited[n].nil? and ((visited[n] > 1 and not two_burned) or (visited[n] > 0 and two_burned))
-    walk_paths(network, node: n, visited: visited.clone, path: path.clone, two_burned: two_burned.clone)
+  network[node].each do |n|
+    next if not visited[n].nil? and (
+      (visited[n] > 1 and not visited.values.include?(2)) or
+      (visited[n] > 0 and visited.values.include?(2))
+    )
+    walk_paths(network, node: n, visited: visited.clone, path: path.clone)
   end
 end
 
