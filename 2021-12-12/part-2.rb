@@ -41,7 +41,7 @@ $gpaths = []
 def walk_paths(network, node = 'start', visited = {}, path = [])
   path.push(node)
   return $gpaths.push(path) if node == 'end'
-  if (node.match /[[:upper:]]/) ? false : true
+  if node.match /[[:lower:]]/
     visited[node] ||= 0
     visited[node] += 1
     visited[node] = 3 if node == "start"
