@@ -38,7 +38,7 @@ end
 
 $gpaths = []
 
-def walk_paths(network, node: 'start', visited: {}, path: [])
+def walk_paths(network, node = 'start', visited = {}, path = [])
   path.push(node)
   return $gpaths.push(path) if node == 'end'
   if (node.match /[[:upper:]]/) ? false : true
@@ -52,7 +52,7 @@ def walk_paths(network, node: 'start', visited: {}, path: [])
       (visited[n] > 1 and not visited.values.include?(2)) or
       (visited[n] > 0 and visited.values.include?(2))
     )
-    walk_paths(network, node: n, visited: visited.clone, path: path.clone)
+    walk_paths(network, n, visited.clone, path.clone)
   end
 end
 
