@@ -29,16 +29,9 @@ end
 def build_map(connections)
   network = {}
   connections.each do |e|
-    e.each do |s|
-      if network[s].nil?
-        network[s] = {
-          big: (s.match /[[:upper:]]/) ? true : false,
-          neighbors: []
-        }
-      end
-    end
-    network[e[0]][:neighbors].push(e[1])
-    network[e[1]][:neighbors].push(e[0])
+    e.each { |s| network[s] ||= [] }
+    network[e[0]].push(e[1])
+    network[e[1]].push(e[0])
   end
   return network
 end
@@ -53,17 +46,15 @@ def walk_paths(network, node: 'start', visited: {}, path: [], two_burned: false)
   end
   local_node = network[node]
   prefix = path.join(',')
-  unless local_node[:big]
-    visited[node] = 0 if visited[node].nil?
+  if (node.match /[[:upper:]]/) ? false : true
+    visited[node] ||= 0
     visited[node] += 1
     two_burned = true if visited[node] > 1 and not two_burned
     visited[node] += 1 if node == "start"
   end
 
-  local_node[:neighbors].each do |n|
-    if not visited[n].nil? and ((visited[n] > 1 and not two_burned) or (visited[n] > 0 and two_burned))
-      next
-    end
+  local_node.each do |n|
+    next if not visited[n].nil? and ((visited[n] > 1 and not two_burned) or (visited[n] > 0 and two_burned))
     walk_paths(network, node: n, visited: visited.clone, path: path.clone, two_burned: two_burned.clone)
   end
 end
