@@ -45,7 +45,7 @@ end
 
 $gpaths = []
 
-def walk_paths(network, node: 'start', visited: {}, path: [], two_burned: '')
+def walk_paths(network, node: 'start', visited: {}, path: [], two_burned: false)
   path.push(node)
   if node == 'end'
     $gpaths.push(path)
@@ -56,14 +56,12 @@ def walk_paths(network, node: 'start', visited: {}, path: [], two_burned: '')
   unless local_node[:big]
     visited[node] = 0 if visited[node].nil?
     visited[node] += 1
-    if visited[node] > 1 and two_burned == ''
-      two_burned = prefix.clone
-    end
+    two_burned = true if visited[node] > 1 and not two_burned
     visited[node] += 1 if node == "start"
   end
 
   local_node[:neighbors].each do |n|
-    if not visited[n].nil? and ((visited[n] > 1 and two_burned == '') or (visited[n] > 0 and two_burned != ''))
+    if not visited[n].nil? and ((visited[n] > 1 and not two_burned) or (visited[n] > 0 and two_burned))
       next
     end
     walk_paths(network, node: n, visited: visited.clone, path: path.clone, two_burned: two_burned.clone)
