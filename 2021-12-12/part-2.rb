@@ -40,10 +40,7 @@ $gpaths = []
 
 def walk_paths(network, node: 'start', visited: {}, path: [])
   path.push(node)
-  if node == 'end'
-    $gpaths.push(path)
-    return
-  end
+  return $gpaths.push(path) if node == 'end'
   if (node.match /[[:upper:]]/) ? false : true
     visited[node] ||= 0
     visited[node] += 1
@@ -59,16 +56,8 @@ def walk_paths(network, node: 'start', visited: {}, path: [])
   end
 end
 
-raw_lines = slurp($args[:file]).map { |l| l.split('-')}
-network = build_map(raw_lines)
+network = build_map(slurp($args[:file]).map { |l| l.split('-')})
 puts network
 walk_paths(network)
-$gpaths.each do |p|
-  puts  p.join(',')
-end
+$gpaths.each { |p| puts  p.join(',')  }
 puts "#{$gpaths.length}"
-
-
-
-
-
