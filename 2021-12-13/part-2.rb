@@ -39,7 +39,7 @@ def parse_input(lines)
   return points, operations
 end
 
-def transform(points, operation)
+def transform!(points, operation)
   i = operation[:axis] == 'x' ? 0 : 1
   points.map do |p|
     next if p[i] < operation[:value]
@@ -65,7 +65,7 @@ end
 
 points, operations = parse_input(slurp($args[:file]))
 
-operations.each { |o| transform(points,o) }
+operations.each { |o| transform!(points,o) }
 render(points.uniq)
 
 # dest =  abs(src - (2*fold_point)), ie 13 fold 7 is 1 = abs(13 - (2*7)), 10f7 = 4 = abs(10 - (2*7))
