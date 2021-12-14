@@ -45,7 +45,7 @@ def transform(points, operation)
     next if p[i] < operation[:value]
     p[i] = (p[i] - (2*operation[:value])).abs
   end
-  points.uniq
+  points = points.uniq
 end
 
 def render(points)
@@ -65,9 +65,7 @@ end
 
 points, operations = parse_input(slurp($args[:file]))
 
-operations.each do |o|
-  points = transform(points,o)
-end
+operations.each { |o| transform(points,o) }
 render(points.uniq)
 
 # dest =  abs(src - (2*fold_point)), ie 13 fold 7 is 1 = abs(13 - (2*7)), 10f7 = 4 = abs(10 - (2*7))
