@@ -41,11 +41,10 @@ end
 
 def transform!(points, operation)
   i = operation[:axis] == 'x' ? 0 : 1
-  points.map do |p|
+  points = points.map do |p|
     next if p[i] < operation[:value]
     p[i] = (p[i] - (2*operation[:value])).abs
-  end
-  points = points.uniq
+  end.uniq
 end
 
 def render(points)
