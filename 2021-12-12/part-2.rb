@@ -1,7 +1,5 @@
 require 'pp'
 require 'optparse'
-require 'term/ansicolor'
-include Term::ANSIColor
 
 $args = {
   file: File.dirname(__FILE__) + "/input"
