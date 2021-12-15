@@ -24,4 +24,52 @@ def slurp (path)
   return input_str.split(/\n/)
 end
 
-raw_lines = slurp($args[:file])
+def parse_input(lines)
+  chain = lines.shift
+  lines.shift
+  subs = lines.map do |l|
+    Hash[ [:find, :insert].zip(l.split(/ -> /)) ]
+  end
+  return chain, subs
+end
+
+def find_subs(subs, chain)
+  actions = []
+  subs.each do |s|
+    (0..chain.length)
+      .select { |i| chain[i,2] == s[:find] }
+      .each do |i|
+        actions.push({position: i, value: s[:insert], rule: s})
+      end
+  end
+  return actions.sort_by { |a| a[:position]}
+end
+
+def execute_subs(chain, actions)
+  actions.each_with_index do |action,i|
+    puts "Doing action #{action}"
+    head = chain[0, action[:position] + 1 + i]
+    tail = chain[action[:position] + 1 + i, chain.length]
+    chain = head + action[:value] + tail
+  end
+  chain
+end
+
+def describe_chain(chain)
+  counts = {}
+  chain.chars.each do |c|
+    counts[c] = 0 if counts[c].nil?
+    counts[c] += 1
+  end
+  counts.sort_by {|k, v| v}.to_h
+end
+
+chain, subs = parse_input(slurp($args[:file]))
+(1..1).each { |i|
+  actions = find_subs(subs, chain)
+  chain = execute_subs(chain, actions)
+  # puts "Round \##{i}"
+  # puts "#{chain}"
+  # puts "#{chain.length}"
+  puts "[#{i}p1] #{describe_chain(chain)}"
+}
