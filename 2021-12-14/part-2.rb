@@ -50,14 +50,7 @@ end
 def tick(soup, rules)
   children = Hash.new(0)
   rules.each do |rule|
-    # puts "Evaluating rule #{rule}"
-    soup.select {|k,v| k == rule[:parent] }.each do |element, value|
-      # puts "Parent #{element} count #{value}"
-      rule[:children].each do |child|
-        children[child] += value
-        # puts "Adding #{value} children of type #{child} to the next generation"
-      end
-    end
+    rule[:children].each { |child| children[child] += soup[rule[:parent]] }
   end
   return children
 end
