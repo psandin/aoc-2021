@@ -35,9 +35,8 @@ def scale_up(graph, size, factor)
     (0..(factor - 1)).each do |r|
       (0..(factor - 1)).each do |c|
         new_i = ((i % size) + (r * size)) + (((i / size) + (c * size)) * (size * factor))
-        new_v = e + r + c
-        new_v -= 9 if new_v > 9
-        staging[new_i] = new_v
+        staging[new_i] = e + r + c
+        staging[new_i] -= 9 if staging[new_i] > 9
       end
     end
   end
