@@ -23,19 +23,18 @@ def slurp_and_parse(path)
   input_str = input_fh.read
   input_fh.close
 
-  height = input_str.split(/\n/).length
-  width = input_str.split(/\n/).first.chars.length
+  size = input_str.split(/\n/).length
   linear = input_str.gsub(/\n/, '').chars.map(&:to_i)
 
-  [linear, width, height]
+  [linear, size]
 end
 
-def scale_up(graph, width, height, factor)
+def scale_up(graph, size, factor)
   staging = {}
   graph.each_with_index do |e, i|
     (0..(factor - 1)).each do |r|
       (0..(factor - 1)).each do |c|
-        new_i = ((i % width) + (r * width)) + (((i / width) + (c * width)) * (width * factor))
+        new_i = ((i % size) + (r * size)) + (((i / size) + (c * size)) * (size * factor))
         new_v = e + r + c
         new_v -= 9 if new_v > 9
         staging[new_i] = new_v
@@ -43,19 +42,19 @@ def scale_up(graph, width, height, factor)
     end
   end
   new_graph = staging.sort.map { |e| e[1] }
-  [new_graph, width * factor, height * factor]
+  [new_graph, size * factor]
 end
 
-def neighbors(node, width, height)
+def neighbors(node, size)
   neighbors = []
-  neighbors.push(node - 1) unless (node % width).zero?
-  neighbors.push(node + 1) unless (node % width) == (width - 1)
-  neighbors.push(node - width) unless (node - width).negative?
-  neighbors.push(node + width) unless (node + width) >= (width * height)
+  neighbors.push(node - 1) unless (node % size).zero?
+  neighbors.push(node + 1) unless (node % size) == (size - 1)
+  neighbors.push(node - size) unless (node - size).negative?
+  neighbors.push(node + size) unless (node + size) >= (size * size)
   neighbors
 end
 
-def dijkstra_spt(graph, width, height)
+def dijkstra_spt(graph, size)
   distances = { 0 => { cost: 0, path: [], in_spt: false } }
   until graph.length == distances.select { |_, v| v[:in_spt] }.length
     puts "#{distances.select { |_, v| v[:in_spt] }.length}/#{graph.length} => #{(distances.select do |_, v|
@@ -63,7 +62,7 @@ def dijkstra_spt(graph, width, height)
                                                                                  end.length / graph.length.to_f) * 100}"
     position, node = distances.reject { |_, v| v[:in_spt] }.min_by { |_, v| v[:cost] }
     node[:in_spt] = true
-    neighbors(position, width, height).each do |i|
+    neighbors(position, size).each do |i|
       neighbor_node = distances[i]
       next if !neighbor_node.nil? && neighbor_node[:in_spt]
 
@@ -74,11 +73,11 @@ def dijkstra_spt(graph, width, height)
       end
     end
   end
-  distances[(width * height) - 1][:path]
+  distances[(size * size) - 1][:path]
 end
 
-nodes, width, height = slurp_and_parse($args[:file])
-nodes, width, height = scale_up(nodes, width, height, 5)
-path = dijkstra_spt(nodes, width, height)
+nodes, size = slurp_and_parse($args[:file])
+nodes, size = scale_up(nodes, size, 5)
+path = dijkstra_spt(nodes, size)
 puts path.to_s
 puts path.map { |i| nodes[i] }.sum
