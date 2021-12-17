@@ -83,10 +83,10 @@ def neighbors(node, size)
 end
 
 def distance(start, goal)
-  s = Math.sqrt(goal + 1)
-  x = (start / s).to_i
-  y = (start % s).to_i
-  Math.sqrt(((((s - y)**2) + ((s - x)**2))))
+  s = Math.sqrt(goal + 1).to_i
+  x = start / s
+  y = start % s
+  Math.sqrt(((s - y)**2) + ((s - x)**2))
 end
 
 def calc_priority(new_cost, index, size)
