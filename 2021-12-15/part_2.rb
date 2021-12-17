@@ -3,6 +3,13 @@
 require 'pp'
 require 'optparse'
 
+require 'term/ansicolor'
+
+class String
+  include Term::ANSIColor
+end
+
+
 $args = {
   file: "#{File.dirname(__FILE__)}/input"
 }
@@ -53,13 +60,58 @@ def neighbors(node, size)
   neighbors
 end
 
+def manhattan (start, goal)
+  # return 0
+  # puts "==> manhattan(#{start}, #{goal})"
+  s = Math.sqrt(goal + 1)
+  x = (start / s).to_i
+  y = (start % s).to_i
+  # puts "s => #{s}"
+  # puts "x => #{x}"
+  # puts "y => #{y}"
+  Math.sqrt((((s - y)**2 + (s - x)**2))).round * 2
+end
+
+def render_search_area(searched, graph)
+  # puts searched.to_s
+  figs = 5
+  s = Math.sqrt(graph.length)
+  (0..(s-1)).each do |y|
+    (0..(s-1)).each do |x|
+      i = ((s * y) + x).to_i
+      # puts "pulling data about #{i}"
+      node = searched[i]
+      # puts "Found #{node}"
+      if node.nil?
+        print " ".rjust(figs+1,'-')
+      else
+        cost = node[:cost] + manhattan(i, graph.length - 1) 
+        v = "#{cost.to_s.rjust(figs, '0')} "
+        v = v.bold if node[:in_spt]
+        print v
+      end
+    end
+    puts
+  end
+  puts
+end
+
+
 def dijkstra_spt(graph, size)
   distances = { 0 => { cost: 0, path: [], in_spt: false } }
+  nodes_touched = 0
   until graph.length == distances.select { |_, v| v[:in_spt] }.length
-    puts "#{distances.select { |_, v| v[:in_spt] }.length}/#{graph.length} => #{(distances.select do |_, v|
-                                                                                   v[:in_spt]
-                                                                                 end.length / graph.length.to_f) * 100}"
-    position, node = distances.reject { |_, v| v[:in_spt] }.min_by { |_, v| v[:cost] }
+    found = distances.select { |_, v| v[:in_spt] }.length
+    to_find = distances.reject { |_, v| v[:in_spt] }
+    best_candidates = to_find.sort_by {|k, v| manhattan(k, graph.length - 1) }[0, (graph.length * 1).to_i]
+    position, node = best_candidates.min_by { |k, v| v[:cost]}
+    if (found % 100).zero?
+      print "#{found}/#{graph.length} => #{((found / graph.length.to_f) * 100).round(3)}% "
+      m = manhattan(position, graph.length - 1)
+      mm = manhattan(0, graph.length - 1)
+      mp = (((mm - m.to_f)/mm)*100).round(3)
+      puts  "m: #{m} mp: #{mp}%"
+    end
     node[:in_spt] = true
     neighbors(position, size).each do |i|
       neighbor_node = distances[i]
@@ -71,9 +123,31 @@ def dijkstra_spt(graph, size)
         distances[i] = { cost: new_cost, path: new_path, in_spt: false }
       end
     end
+    nodes_touched += 1
+    # render_search_area(distances, graph)
+    break if position == graph.length - 1
   end
+  puts "Touched #{nodes_touched} of #{graph.length} nodes (#{((nodes_touched.to_f/graph.length)*100).round(3)}%)"
   distances[(size * size) - 1][:path]
 end
+
+# puts "m(0,99)  => #{manhattan(0,99)}"
+# puts "m(1,99)  => #{manhattan(1,99)}"
+# puts "m(10,99) => #{manhattan(10,99)}"
+# puts
+# puts "m(99,99) => #{manhattan(99,99)}"
+
+# exit
+
+# (0..9).each do |y|
+#   (0..9).each do |x|
+#     i = (y*10)+x
+#     print "#{manhattan(i, 99).to_s.rjust(3, '0')} "
+#   end
+#   puts
+# end
+
+# exit
 
 nodes, size = slurp_and_parse($args[:file])
 nodes, size = scale_up(nodes, size, 5)
