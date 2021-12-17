@@ -69,7 +69,7 @@ def scale_up(graph, size, factor)
       end
     end
   end
-  new_graph = staging.sort.map { |e| e[1] }
+  new_graph = staging.sort.map { |_, v| v }
   [new_graph, size * factor]
 end
 
