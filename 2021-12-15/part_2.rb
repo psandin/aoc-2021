@@ -9,7 +9,6 @@ class String
   include Term::ANSIColor
 end
 
-
 $args = {
   file: "#{File.dirname(__FILE__)}/input"
 }
@@ -42,19 +41,20 @@ class PQueue
     @storage = Hash.new { |h, k| h[k] = [] }
   end
 
-  def push (item, priority)
+  def push(item, priority)
     @storage[priority].push(item)
   end
 
   def next
-    priority, bucket = @storage.min_by {|k,_| k }
+    priority, bucket = @storage.min_by { |k, _| k }
     return nil if bucket.nil?
+
     @storage.delete(priority) if bucket.length == 1
     bucket.shift
   end
 
-  def has_items?
-    !@storage.first.nil?
+  def empty?
+    @storage.first.nil?
   end
 end
 
@@ -82,34 +82,34 @@ def neighbors(node, size)
   neighbors
 end
 
-def manhattan (start, goal)
+def manhattan(start, goal)
   s = Math.sqrt(goal + 1)
   x = (start / s).to_i
   y = (start % s).to_i
-  Math.sqrt((((s - y)**2 + (s - x)**2))).round * 2
+  Math.sqrt(((((s - y)**2) + ((s - x)**2)))).round * 2
 end
 
 def calc_priority(new_cost, index, size)
-  goal = (size**2)-1
+  goal = (size**2) - 1
   m = manhattan(index, goal)
   new_cost + m
 end
 
 def a_star(graph, size)
   goal = (size**2) - 1
-  candidate_queue = PQueue.new()
+  candidate_queue = PQueue.new
   candidate_queue.push(0, 0)
   path_data = Hash.new do |h, k|
-    h[k] = Hash.new()
-    h[k] = { cost:2**32, path: [], finalized: false }
+    h[k] = { cost: 2**32, path: [], finalized: false }
   end
   path_data[0] = { cost: 0, path: [], finalized: false }
 
   iterations = 0
-  while candidate_queue.has_items?
+  until candidate_queue.empty?
     current_index = candidate_queue.next
     current_data = path_data[current_index]
     next if current_data[:finalized]
+
     current_data[:finalized] = true
 
     neighbors(current_index, size).each do |i|
@@ -129,7 +129,7 @@ def a_star(graph, size)
     end
 
     iterations += 1
-    puts "#{iterations} / #{goal} | #{((iterations.to_f / goal)*100).round(3)}%"
+    puts "#{iterations} / #{goal} | #{((iterations.to_f / goal) * 100).round(3)}%"
 
     break if current_index == graph.length - 1
   end
