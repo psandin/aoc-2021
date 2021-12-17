@@ -129,7 +129,7 @@ def a_star(graph, size)
     end
 
     iterations += 1
-    puts "#{iterations} / #{goal} | #{((iterations.to_f / goal) * 100).round(3)}%"
+    puts "#{iterations} / #{goal} | #{((iterations.to_f / goal) * 100).round(3)}%"  if $args[:verbose]
 
     break if current_index == graph.length - 1
   end
@@ -139,5 +139,5 @@ end
 nodes, size = slurp_and_parse($args[:file])
 nodes, size = scale_up(nodes, size, 5)
 path = a_star(nodes, size)
-puts path.to_s
+puts path.to_s if $args[:verbose]
 puts path.map { |i| nodes[i] }.sum
