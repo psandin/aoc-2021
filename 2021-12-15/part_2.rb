@@ -82,16 +82,16 @@ def neighbors(node, size)
   neighbors
 end
 
-def manhattan(start, goal)
+def distance(start, goal)
   s = Math.sqrt(goal + 1)
   x = (start / s).to_i
   y = (start % s).to_i
-  Math.sqrt(((((s - y)**2) + ((s - x)**2)))).round * 2
+  Math.sqrt(((((s - y)**2) + ((s - x)**2))))
 end
 
 def calc_priority(new_cost, index, size)
   goal = (size**2) - 1
-  m = manhattan(index, goal)
+  m = distance(index, goal)
   new_cost + m
 end
 
