@@ -129,7 +129,7 @@ def a_star(graph, size)
     end
 
     iterations += 1
-    puts "#{iterations} / #{goal} | #{((iterations.to_f / goal) * 100).round(3)}%"  if $args[:verbose]
+    puts "#{iterations} / #{goal} | #{((iterations.to_f / goal) * 100).round(3)}%" if $args[:verbose]
 
     break if current_index == graph.length - 1
   end
