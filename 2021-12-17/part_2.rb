@@ -66,7 +66,7 @@ def trace_shot(initx, inity, target)
   history = {}
   history[:points] = [{ x: 0, y: 0 }]
   history[:maxy] = 0
-  while true
+  loop do
     last = history[:points].reverse.first
     current = { x: last[:x] + initx, y: last[:y] + inity }
     current[:ymatch] = ymatch(current, target)
@@ -76,7 +76,7 @@ def trace_shot(initx, inity, target)
     history[:maxy] = current[:y] if current[:y] > history[:maxy]
     history[:points].push(current)
     inity -= 1
-    initx += (initx > 0 ? -1 : 1) unless initx.zero?
+    initx += (initx.positive? ? -1 : 1) unless initx.zero?
     break if current[:y] < target[:y].min
     break if current[:x] > target[:x].max
   end
