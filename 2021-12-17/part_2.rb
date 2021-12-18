@@ -94,10 +94,12 @@ target_range = parse_target(line)
 puts target_range.to_s
 xrange = calc_x_range(target_range[:x])
 runs = []
-xrange.each do |x|
-  (0..200).each do |y|
+(0..600).each do |x|
+  (-600..600).each do |y|
     runs.push(trace_shot(x, y, target_range))
   end
 end
 
-runs.select { |r| r[:hit] }.sort_by {|r| -r[:maxy]}.first(2).each {|r| display_path(r)}
+hits = runs.select { |r| r[:hit] }.sort_by {|r| -r[:maxy]}
+display_path(hits.first)
+puts hits.length
