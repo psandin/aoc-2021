@@ -30,7 +30,7 @@ def slurp(path)
   input_str.split(/\n/).first
 end
 
-def parse_target (line)
+def parse_target(line)
   _, cords = line.split(': x=')
   x_raw, y_raw = cords.split(', y=')
   x = x_raw.split('..').map(&:to_i).sort
@@ -38,19 +38,19 @@ def parse_target (line)
   { x: (x[0]..x[1]), y: (y[0]..y[1]) }
 end
 
-def xmatch (point, target)
+def xmatch(point, target)
   target[:x].include?(point[:x])
 end
 
-def ymatch (point, target)
+def ymatch(point, target)
   target[:y].include?(point[:y])
 end
 
-def in_target (point, target)
-   xmatch(point, target) && ymatch(point, target)
+def in_target(point, target)
+  xmatch(point, target) && ymatch(point, target)
 end
 
-def display_path (data)
+def display_path(data)
   data[:points].each do |p|
     x = p[:x].to_s
     x = x.bold if p[:xmatch]
@@ -62,15 +62,9 @@ def display_path (data)
   puts '================'
 end
 
-def calc_x_range (target)
-  minx = Math.sqrt(((2*target.min) + 0.25) - 1/2).ceil - 2
-  maxx = Math.sqrt(((2*target.max) + 0.25) - 1/2).floor + 2
-  minx..maxx
-end
-
 def trace_shot(initx, inity, target)
   history = {}
-  history[:points] = [{ x: 0, y: 0}]
+  history[:points] = [{ x: 0, y: 0 }]
   history[:maxy] = 0
   while true
     last = history[:points].reverse.first
@@ -82,7 +76,7 @@ def trace_shot(initx, inity, target)
     history[:maxy] = current[:y] if current[:y] > history[:maxy]
     history[:points].push(current)
     inity -= 1
-    initx += ((initx > 0) ? -1 : 1) if !initx.zero?
+    initx += (initx > 0 ? -1 : 1) unless initx.zero?
     break if current[:y] < target[:y].min
     break if current[:x] > target[:x].max
   end
@@ -92,7 +86,6 @@ end
 line = slurp($args[:file])
 target_range = parse_target(line)
 puts target_range.to_s
-xrange = calc_x_range(target_range[:x])
 runs = []
 (0..600).each do |x|
   (-600..600).each do |y|
@@ -100,6 +93,6 @@ runs = []
   end
 end
 
-hits = runs.select { |r| r[:hit] }.sort_by {|r| -r[:maxy]}
+hits = runs.select { |r| r[:hit] }.sort_by { |r| -r[:maxy] }
 display_path(hits.first)
 puts hits.length
