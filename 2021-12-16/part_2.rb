@@ -168,6 +168,29 @@ def sum_versions (packet)
   packet[:children].map { |c| sum_versions(c) }.sum + sum
 end
 
+def evaluate_packet (packet)
+  case packet[:type]
+  when 0 # sum
+    return packet[:children].map {|c| evaluate_packet(c)}.sum
+  when 1 # product
+    return packet[:children].map {|c| evaluate_packet(c)}.reduce(:*)
+  when 2 # min
+    return packet[:children].map {|c| evaluate_packet(c)}.min
+  when 3 # max
+    return packet[:children].map {|c| evaluate_packet(c)}.max
+  when 4 # value
+    return packet[:value]
+  when 5 # gt
+    return (evaluate_packet(packet[:children][0])  > evaluate_packet(packet[:children][1])) ? 1 : 0
+  when 6 # lt
+    return (evaluate_packet(packet[:children][0])  < evaluate_packet(packet[:children][1])) ? 1 : 0
+  when 7 # eq
+    return (evaluate_packet(packet[:children][0]) == evaluate_packet(packet[:children][1])) ? 1 : 0
+  else
+    puts "!!! bad backet type: #{packet[:type]}"
+  end
+end
+
 packets = {}
 slurp($args[:file]).each do |hex_str|
   bin_str = to_bin(hex_str)
@@ -180,5 +203,6 @@ packets.each do |k, v|
   puts k
   pretty_packet v
   puts "Version sum: #{sum_versions(v)}"
+  puts "Result: #{evaluate_packet(v)}"
   puts
 end
