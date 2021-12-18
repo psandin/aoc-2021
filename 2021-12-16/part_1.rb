@@ -162,6 +162,12 @@ def pretty_packet(packet, indent = 0)
   end
 end
 
+def sum_versions (packet)
+  sum = packet[:version]
+  return sum if packet[:children].nil?
+  packet[:children].map { |c| sum_versions(c) }.sum + sum
+end
+
 packets = {}
 slurp($args[:file]).each do |hex_str|
   bin_str = to_bin(hex_str)
@@ -173,5 +179,6 @@ end
 packets.each do |k, v|
   puts k
   pretty_packet v
+  puts "Version sum: #{sum_versions(v)}"
   puts
 end
