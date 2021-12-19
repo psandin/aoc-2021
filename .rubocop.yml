@@ -16,5 +16,8 @@ Metrics/PerceivedComplexity:
 Metrics/BlockLength:
   Enabled: false
 
+Metrics/ClassLength:
+  Enabled: false
+
 AllCops:
     NewCops: enable
