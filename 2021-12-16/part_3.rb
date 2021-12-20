@@ -31,15 +31,21 @@ def slurp(path)
   input_str.split(/\n/)
 end
 
+class PacketTypeException < StandardError
+end
+
+class PacketModeException < StandardError
+end
+
 # Class for parsing aoc-2012-12-16 data
 class Packet
-  attr_reader :children, :type, :value
+  attr_reader :children, :type, :value, :length_in_bits
   attr_accessor :version
 
-  def initialize(remainder, mode: 'bin')
-    @version = 0
+  def initialize(remainder = nil, version: 0, value: 0, mode: 'bin')
+    @version = version
     @type = 4
-    @value = 0
+    @value = value
     @length_in_bits = nil
     @length = nil
     @children = nil
@@ -114,7 +120,7 @@ class Packet
     when 7 # eq
       @children[0].evaluate == @children[1].evaluate ? 1 : 0
     else
-      puts "!!! bad backet type: #{@type}"
+      raise PacketModeException.new "!!! bad backet type: #{@type}"
     end
   end
 
@@ -192,8 +198,48 @@ class Packet
       bstr = bstr.ljust(pad_up_to, '0')
       bstr.to_i(2).to_s(16).upcase
     else
-      puts "Bad encoding mode [#{mode}]"
+      raise PacketModeException.new "Bad encoding mode [#{mode}]"
     end
+  end
+
+  def type= (value)
+    return self if @type == value
+    @type = value
+    if value == 4
+      self.value = 0
+    else
+      @value = nil
+      @length = 0 if @length_in_bits.nil?
+      @children = [] if @length_in_bits.nil?
+      @length_in_bits = false if @length_in_bits.nil?
+    end
+    self
+  end
+
+  def value= (value)
+    @value = value
+    @length_in_bits = nil
+    @length = nil
+    @children = nil
+  end
+
+  def length_in_bits= (value)
+    raise PacketTypeException.new "Can not set length type for packets with type 4" if @type == 4
+    @length_in_bits = value
+    @length = @children.map { |c| @length_in_bits ? c.size : 1 }.sum
+  end
+
+  def add_child (child = nil, version: nil, value: nil)
+    raise PacketTypeException.new "Can not add children to packets with type 4" if @type == 4
+    if child.nil?
+      child = Packet.new(version:version, value:value)
+    end
+    @length += @length_in_bits ? child.size : 1
+    @children.push(child)
+  end
+
+  def size
+    self.encode.length
   end
 end
 
