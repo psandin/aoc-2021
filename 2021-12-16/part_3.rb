@@ -143,6 +143,55 @@ class Packet
       pretty_str +=  "#{istr}value => #{@value}\n"
     end
   end
+
+  def _encode_literal
+    vbits = @value.to_s(2)
+    unless (vbits.length % 4).zero?
+      pad_up_to = vbits.length + (4 - (vbits.length % 4))
+      vbits = vbits.rjust(pad_up_to, '0')
+    end
+    byte_marker = '0'
+    bstr = ''
+    until vbits.length.zero?
+      block = vbits.slice!(-4..-1)
+      bstr = byte_marker + block + bstr
+      byte_marker = '1'
+    end
+    bstr
+  end
+
+  def encode(mode = 'bin')
+    bstr = ''
+    bstr += @version.to_s(2).rjust(3, '0')
+    bstr += @type.to_s(2).rjust(3, '0')
+    if @type == 4
+      bstr += _encode_literal
+    elsif @length_in_bits
+      bstr += '0'
+      bstr += @length.to_s(2).rjust(15, '0')
+      cblock = ''
+      @children.each do |c|
+        cblock += c.encode
+      end
+      bstr += cblock.ljust(@length, '0')
+    else
+      bstr += '1'
+      bstr += @length.to_s(2).rjust(11, '0')
+      @children.each do |c|
+        bstr += c.encode
+      end
+    end
+    case mode
+    when 'bin'
+      bstr
+    when 'hex'
+      pad_up_to = bstr.length + (4 - (bstr.length % 4))
+      bstr = bstr.ljust(pad_up_to, '0')
+      bstr.to_i(2).to_s(16).upcase
+    else
+      puts "Bad encoding mode [#{mode}]"
+    end
+  end
 end
 
 packets = {}
@@ -152,6 +201,7 @@ end
 
 packets.each do |h, p|
   puts h
+  puts "#{p.encode('hex')} [re-encoded]"
   puts p.pretty
   puts "Version sum: #{p.sum_versions}"
   puts "Result: #{p.evaluate}"
