@@ -33,6 +33,9 @@ end
 
 # Class for parsing aoc-2012-12-16 data
 class Packet
+  attr_reader :children, :type, :value
+  attr_accessor :version
+
   def initialize(remainder, mode: 'bin')
     @version = 0
     @type = 4
