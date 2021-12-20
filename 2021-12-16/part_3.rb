@@ -134,23 +134,27 @@ class Packet
   def pretty(indent = 0)
     istr = ''.rjust(indent * 2, ' ')
     pretty_str = ''
-    pretty_str += "#{istr}version => #{@version}\n"
-    pretty_str += "#{istr}type => #{@type}\n"
+    pretty_str += "#{istr}version => (#{@version.to_s(2).rjust(3, '0')}) #{@version}\n"
+    pretty_str += "#{istr}type => (#{@type.to_s(2).rjust(3, '0')}) #{@type}\n"
     if @value.nil?
-      pretty_str +=  "#{istr}length_in_bits => #{@length_in_bits}\n"
-      pretty_str +=  "#{istr}length => #{@length}\n"
-      pretty_str +=  "#{istr}children [\n"
+      pretty_str +=  "#{istr}length_in_bits => (#{@length_in_bits ? '0' : '1'}) #{@length_in_bits}\n"
+      blen = @length_in_bits ? @length.to_s(2).rjust(15, '0') : @length.to_s(2).rjust(11, '0')
+      pretty_str +=  "#{istr}length => (#{blen}) #{@length}\n"
+      child_str = ''
+      child_bin = ''
       @children.each do |p|
         child_indent = indent + 1
         cistr = ''.rjust(child_indent * 2, ' ')
-        pretty_str += "#{cistr}{\n"
-        pretty_str += p.pretty(child_indent + 1)
-        pretty_str += "#{cistr}}\n"
+        child_str += p.pretty(child_indent + 1)
+        child_bin += p.encode
+        child_str += "\n"
       end
-      pretty_str +=  "#{istr}]\n"
+      pretty_str += "#{istr}children (#{child_bin})\n"
+      pretty_str += child_str
     else
-      pretty_str +=  "#{istr}value => #{@value}\n"
+      pretty_str +=  "#{istr}value => (#{self._encode_literal}) #{@value}\n"
     end
+    pretty_str
   end
 
   def _encode_literal
