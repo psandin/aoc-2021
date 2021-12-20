@@ -243,6 +243,36 @@ class Packet
   end
 end
 
+np = Packet.new
+np.version = 2
+np.type = 4
+np.value = 1337
+puts np.pretty
+puts np.encode('hex')
+puts
+
+packet2 = Packet.new(np.encode('hex'), mode: 'hex')
+puts packet2.pretty
+puts
+
+p3 = Packet.new version:2, value: 1337
+puts p3.pretty
+puts
+
+parent = Packet.new
+parent.version = 3
+parent.type = 0
+parent.length_in_bits = true
+parent.add_child(version: 1, value: 13)
+parent.add_child(version: 2, value: 37)
+puts parent.pretty
+puts parent.encode('hex')
+puts
+parent.length_in_bits = false
+puts parent.pretty
+puts parent.encode('hex')
+puts
+
 packets = {}
 slurp($args[:file]).each do |hex_str|
   packets[hex_str] = Packet.new(hex_str.clone, mode: 'hex')
