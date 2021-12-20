@@ -31,14 +31,14 @@ def slurp(path)
   input_str.split(/\n/)
 end
 
-class PacketTypeException < StandardError
-end
-
-class PacketModeException < StandardError
-end
-
 # Class for parsing aoc-2012-12-16 data
 class Packet
+  class PacketTypeException < StandardError
+  end
+
+  class PacketModeException < StandardError
+  end
+
   attr_reader :children, :type, :value, :length_in_bits
   attr_accessor :version
 
@@ -120,7 +120,7 @@ class Packet
     when 7 # eq
       @children[0].evaluate == @children[1].evaluate ? 1 : 0
     else
-      raise PacketModeException.new "!!! bad backet type: #{@type}"
+      raise PacketModeException, "!!! bad backet type: #{@type}"
     end
   end
 
@@ -137,14 +137,13 @@ class Packet
     pretty_str += "#{istr}version => (#{@version.to_s(2).rjust(3, '0')}) #{@version}\n"
     pretty_str += "#{istr}type => (#{@type.to_s(2).rjust(3, '0')}) #{@type}\n"
     if @value.nil?
-      pretty_str +=  "#{istr}length_in_bits => (#{@length_in_bits ? '0' : '1'}) #{@length_in_bits}\n"
+      pretty_str += "#{istr}length_in_bits => (#{@length_in_bits ? '0' : '1'}) #{@length_in_bits}\n"
       blen = @length_in_bits ? @length.to_s(2).rjust(15, '0') : @length.to_s(2).rjust(11, '0')
-      pretty_str +=  "#{istr}length => (#{blen}) #{@length}\n"
+      pretty_str += "#{istr}length => (#{blen}) #{@length}\n"
       child_str = ''
       child_bin = ''
       @children.each do |p|
         child_indent = indent + 1
-        cistr = ''.rjust(child_indent * 2, ' ')
         child_str += p.pretty(child_indent + 1)
         child_bin += p.encode
         child_str += "\n"
@@ -152,7 +151,7 @@ class Packet
       pretty_str += "#{istr}children (#{child_bin})\n"
       pretty_str += child_str
     else
-      pretty_str +=  "#{istr}value => (#{self._encode_literal}) #{@value}\n"
+      pretty_str += "#{istr}value => (#{_encode_literal}) #{@value}\n"
     end
     pretty_str
   end
@@ -202,12 +201,13 @@ class Packet
       bstr = bstr.ljust(pad_up_to, '0')
       bstr.to_i(2).to_s(16).upcase
     else
-      raise PacketModeException.new "Bad encoding mode [#{mode}]"
+      raise PacketModeException, "Bad encoding mode [#{mode}]"
     end
   end
 
-  def type= (value)
-    return self if @type == value
+  def type=(value)
+    return if @type == value
+
     @type = value
     if value == 4
       self.value = 0
@@ -217,33 +217,32 @@ class Packet
       @children = [] if @length_in_bits.nil?
       @length_in_bits = false if @length_in_bits.nil?
     end
-    self
   end
 
-  def value= (value)
+  def value=(value)
     @value = value
     @length_in_bits = nil
     @length = nil
     @children = nil
   end
 
-  def length_in_bits= (value)
-    raise PacketTypeException.new "Can not set length type for packets with type 4" if @type == 4
+  def length_in_bits=(value)
+    raise PacketTypeException, 'Can not set length type for packets with type 4' if @type == 4
+
     @length_in_bits = value
     @length = @children.map { |c| @length_in_bits ? c.size : 1 }.sum
   end
 
-  def add_child (child = nil, version: nil, value: nil)
-    raise PacketTypeException.new "Can not add children to packets with type 4" if @type == 4
-    if child.nil?
-      child = Packet.new(version:version, value:value)
-    end
+  def add_child(child = nil, version: nil, value: nil)
+    raise PacketTypeException, 'Can not add children to packets with type 4' if @type == 4
+
+    child = Packet.new(version: version, value: value) if child.nil?
     @length += @length_in_bits ? child.size : 1
     @children.push(child)
   end
 
   def size
-    self.encode.length
+    encode.length
   end
 end
 
@@ -259,7 +258,7 @@ packet2 = Packet.new(np.encode('hex'), mode: 'hex')
 puts packet2.pretty
 puts
 
-p3 = Packet.new version:2, value: 1337
+p3 = Packet.new version: 2, value: 1337
 puts p3.pretty
 puts
 
