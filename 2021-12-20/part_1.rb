@@ -37,12 +37,13 @@ end
 def parse_input(lines)
   rules = lines.shift.chars.map { |c| c == '#' }
   lines.shift
-  map = []
+  map = {lit:[], bounds: {}, border_state: false}
   lines.each_with_index do |r, y|
     r.chars.each_with_index do |c, x|
-      map.push([x, y]) if c == '#'
+      map[:lit].push([x, y]) if c == '#'
     end
   end
+  map[:bounds] = get_bounds(map[:lit])
   [map, rules]
 end
 
@@ -51,37 +52,53 @@ def display_rules(rules)
 end
 
 def tick(map, rules)
-  new_map = []
-  bounds = get_bounds(map)
-  (bounds[:y][0]..bounds[:y][1]).each do |y|
-    (bounds[:x][0]..bounds[:x][1]).each do |x|
-      new_map.push([x, y]) if rules[index_for_cell(map, [x, y])]
+  new_lit = []
+  (map[:bounds][:y][0]-1..map[:bounds][:y][1]+1).each do |y|
+    (map[:bounds][:x][0]-1..map[:bounds][:x][1]+1).each do |x|
+      new_lit.push([x, y]) if rules[index_for_cell(map, [x, y])]
     end
   end
-  new_map
+  map[:lit] = new_lit
+  map[:border_state] = (map[:border_state] && rules[511] == true) || (!map[:border_state] && rules[0] == true)
+  if map[:border_state]
+    map[:bounds][:y][0] -= 1
+    map[:bounds][:x][0] -= 1
+    map[:bounds][:y][1] += 1
+    map[:bounds][:x][1] += 1
+  else
+    map[:bounds] = get_bounds(map[:lit])
+  end
 end
 
 def get_bounds(map)
   xs = map.map { |e| e[0] }
   ys = map.map { |e| e[1] }
-  { x: [xs.min - 1, xs.max + 1], y: [ys.min - 1, ys.max + 1] }
+  { x: [xs.min, xs.max], y: [ys.min, ys.max] }
 end
 
 def display_map(map)
-  bounds = get_bounds(map)
-  (bounds[:y][0]..bounds[:y][1]).each do |y|
-    (bounds[:x][0]..bounds[:x][1]).each do |x|
-      print map.include?([x, y]) ? '#' : '.'
+  xbound = (map[:bounds][:x][0]..map[:bounds][:x][1])
+  ybound = (map[:bounds][:y][0]..map[:bounds][:y][1])
+  (map[:bounds][:y][0]-1..map[:bounds][:y][1]+1).each do |y|
+    (map[:bounds][:x][0]-1..map[:bounds][:x][1]+1).each do |x|
+      lit =  xbound.include?(x) && ybound.include?(y) ? map[:lit].include?([x,y]) : map[:border_state]
+      print lit ? '#' : '.'
     end
     puts
   end
+  puts map[:lit].length
 end
 
 def index_for_cell(map, point)
   bstr = ''
+  xbound = (map[:bounds][:x][0]..map[:bounds][:x][1])
+  ybound = (map[:bounds][:y][0]..map[:bounds][:y][1])
   (-1..1).each do |ym|
     (-1..1).each do |xm|
-      bstr += map.include?([point[0] + xm, point[1] + ym]) ? '1' : '0'
+      x = point[0] + xm
+      y = point[1] + ym
+      pred = xbound.include?(x) && ybound.include?(y) ? map[:lit].include?([x,y]) : map[:border_state]
+      bstr += pred  ? '1' : '0'
     end
   end
   bstr.to_i(2)
@@ -91,7 +108,6 @@ map, rules = parse_input(slurp($args[:file]))
 display_map(map)
 2.times do
   puts
-  map = tick(map, rules)
+  tick(map, rules)
   display_map(map)
 end
-puts map.length
