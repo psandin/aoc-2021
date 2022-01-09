@@ -1,76 +1,33 @@
+# ABFGGFDEEDCCBA
+# G w[4] = w[3] + (6 - 6)
+# F w[5] = w[2] + (12 - 14)
+# E w[8] = w[7] + (12 - 8)
+# D w[9] = w[6] + (7 - 15)
+# C w[11] = w[10] + (6 - 11)
+# B w[12] = w[1] + (9 - 13)
+# A w[13] = w[0] + (1 - 4)
+# 99999795919456
+
 inp w
-mul x 0
-add x z
-mod x 26
-div z 1
-add x 10
-eql x w
-eql x 0
-mul y 0
-add y 25
-mul y x
-add y 1
-mul z y
-mul y 0
-add y w
-add y 1
-mul y x
-add z y
+add w 1
+add z w
+
 inp w
-mul x 0
-add x z
-mod x 26
-div z 1
-add x 11
-eql x w
-eql x 0
-mul y 0
-add y 25
-mul y x
-add y 1
-mul z y
-mul y 0
-add y w
-add y 9
-mul y x
-add z y
+add w 9
+mul z 26
+add z w
+
 inp w
-mul x 0
-add x z
-mod x 26
-div z 1
-add x 14
-eql x w
-eql x 0
-mul y 0
-add y 25
-mul y x
-add y 1
-mul z y
-mul y 0
-add y w
-add y 12
-mul y x
-add z y
+add w 12
+mul z 26
+add z w
+
 inp w
-mul x 0
-add x z
-mod x 26
-div z 1
-add x 13
-eql x w
-eql x 0
-mul y 0
-add y 25
-mul y x
-add y 1
-mul z y
-mul y 0
-add y w
-add y 6
-mul y x
-add z y
-inp w
+add w 6
+mul z 26
+add z w
+
+inp w # w[4] = w[3] + (6 - 6)
 mul x 0
 add x z
 mod x 26
@@ -88,7 +45,8 @@ add y w
 add y 9
 mul y x
 add z y
-inp w
+
+inp w # w[5] = w[2] + (12 - 14)
 mul x 0
 add x z
 mod x 26
@@ -106,43 +64,18 @@ add y w
 add y 15
 mul y x
 add z y
+
 inp w
-mul x 0
-add x z
-mod x 26
-div z 1
-add x 14
-eql x w
-eql x 0
-mul y 0
-add y 25
-mul y x
-add y 1
-mul z y
-mul y 0
-add y w
-add y 7
-mul y x
-add z y
+add w 7
+mul z 26
+add z w
+
 inp w
-mul x 0
-add x z
-mod x 26
-div z 1
-add x 13
-eql x w
-eql x 0
-mul y 0
-add y 25
-mul y x
-add y 1
-mul z y
-mul y 0
-add y w
-add y 12
-mul y x
-add z y
-inp w
+add w 12
+mul z 26
+add z w
+
+inp w # w[8] = w[7] + (12 - 8)
 mul x 0
 add x z
 mod x 26
@@ -160,7 +93,8 @@ add y w
 add y 15
 mul y x
 add z y
-inp w
+
+inp w # w[9] = w[6] + (7 - 15)
 mul x 0
 add x z
 mod x 26
@@ -178,25 +112,14 @@ add y w
 add y 3
 mul y x
 add z y
+
 inp w
-mul x 0
-add x z
-mod x 26
-div z 1
-add x 10
-eql x w
-eql x 0
-mul y 0
-add y 25
-mul y x
-add y 1
-mul z y
-mul y 0
-add y w
-add y 6
-mul y x
-add z y
-inp w
+add w 6
+mul z 26
+add z w
+
+
+inp w # w[11] = w[10] + (6 - 11)
 mul x 0
 add x z
 mod x 26
@@ -214,7 +137,8 @@ add y w
 add y 2
 mul y x
 add z y
-inp w
+
+inp w # w[12] = w[1] + (9 - 13)
 mul x 0
 add x z
 mod x 26
@@ -232,7 +156,8 @@ add y w
 add y 10
 mul y x
 add z y
-inp w
+
+inp w # w[13] = w[0] + (1 - 4)
 mul x 0
 add x z
 mod x 26
