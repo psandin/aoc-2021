@@ -106,7 +106,8 @@ rounds = 0
 until updates.zero?
   rounds +=1
   updates =  tick(sea_map)
-  render_map(sea_map)
+  render_map(sea_map) if $args[:verbose]
   puts updates
 end
+render_map(sea_map) unless $args[:verbose]
 puts rounds
